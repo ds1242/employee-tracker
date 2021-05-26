@@ -1,10 +1,12 @@
 const mysql = require('mysql2');
+// const { secrets } = require('.secrets.js');
+const secret = require('../secrets');
 
 const db = mysql.createConnection(
     {
         host:'localhost',
         user: 'root',
-        password: 'SurfaceSkis12!!',
+        password: secret,
         database: 'employee_tracker'
     },
     console.log('Connected to the election database')
