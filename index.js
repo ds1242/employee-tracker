@@ -14,6 +14,12 @@ const questions = [
         message: 'What would you like to do?',
         choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Exit']
 
+    },
+    {
+        type:'input',
+        name: 'newDepartment',
+        message: 'What is the name of the new department?',
+        when: (answers) => answers.menu === 'Add a department'
     }
 ];
 
@@ -25,7 +31,7 @@ async function promptUser() {
 
     return inqurier
         .prompt(questions)
-        .then(({menu}) => {
+        .then(({menu, newDepartment}) => {
             if(menu ===  'View all departments') {
                 const sql = `SELECT * FROM department`;
 
@@ -63,7 +69,19 @@ async function promptUser() {
                     console.log(table);
                     return promptUser();
                 })
-            } 
+            } else if(menu === 'Add a department') {
+                const sql = `INSERT INTO department (name) VALUES (?)`;
+                const params = [newDepartment];
+                db.query(sql, params, (err, rows) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    const table = cTable.getTable(rows);
+                    console.log(table);
+                    return promptUser();
+                })
+            }
         })
         // .then(promptUser());
         // .then(db.execute('/api/departments'));
