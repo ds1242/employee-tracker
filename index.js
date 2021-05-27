@@ -46,20 +46,24 @@ async function promptUser() {
                         console.log(err);
                         return;
                     }
-                    console.log(rows)
+                    const table = cTable.getTable(rows);
+                    console.log(table);
                     return promptUser();
                 });
             } else if(menu === 'View all employees') {
-                const sql = `SELECT * FROM roles`;
+                const sql = `SELECT E.*, M.first_name AS manager_first_name, M.last_name AS manager_last_name
+                FROM employee E
+                JOIN employee M ON E.manager_id = M.id`;
                 db.query(sql, (err, rows) => {
                     if(err) {
                         console.log(err);
                         return;
                     }
-                    console.log(rows);
+                    const table = cTable.getTable(rows);
+                    console.log(table);
                     return promptUser();
                 })
-            }
+            } 
         })
         // .then(promptUser());
         // .then(db.execute('/api/departments'));
