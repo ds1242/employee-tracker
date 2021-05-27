@@ -29,22 +29,23 @@ VALUES
 -- insert employees
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES
-    ('Jane', 'Doe', 1, 5),
-    ('Mary', 'Jane', 1, 5),
-    ('Trainer', 'One', 2, 5),
-    ('Trainer', 'Two', 2, 5),
-    ('Manager', 'HR', 3, 19),
-    ('Accountant', 'One', 4, 10),
-    ('Accountant', 'Two', 5, 10),
-    ('AP Specialist', 'One', 6, 10),
-    ('AP Specialist', 'Two', 7, 10),
-    ('Manager', 'Accounting', 8, 19),
-    ('Marketer', 'One', 9, 13),
-    ('Marketer', 'Two', 10, 13),
-    ('Manager', 'Marketing', 11, 19),
-    ('Developer', 'One', 12, 17),
-    ('Developer', 'Two', 13, 17),
-    ('Manager', 'IT', 14, 19),
-    ('CEO', 'Of All', 15, 19);
+    ('CEO', 'Of All', 15, NULL),
+    ('Manager', 'HR', 3, 1),
+    ('Manager', 'IT', 14, 1),
+    ('Manager', 'Marketing', 11, 1),
+    ('Manager', 'Accounting', 8, 1),  
+    ('Jane', 'Doe', 1, 2),
+    ('Mary', 'Jane', 1, 2),
+    ('Trainer', 'One', 2, 2),
+    ('Trainer', 'Two', 2, 2), 
+    ('Accountant', 'One', 4, 5),
+    ('Accountant', 'Two', 5, 5),
+    ('AP Specialist', 'One', 6, 5),
+    ('AP Specialist', 'Two', 7, 5),    
+    ('Marketer', 'One', 9, 4),
+    ('Marketer', 'Two', 10, 4),    
+    ('Developer', 'One', 12, 3),
+    ('Developer', 'Two', 13, 3);
+    
 
 
