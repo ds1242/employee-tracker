@@ -24,3 +24,5 @@ db.connect(err => {
         console.log(`Server Running on Port ${PORT}`);
     });
 });
+
+// module.exports = server;
