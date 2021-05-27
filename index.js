@@ -34,7 +34,8 @@ async function promptUser() {
                         console.log(err)
                         return;
                     }
-                    console.log(rows)
+                    const table = cTable.getTable(rows);
+                    console.log(table);
                     return promptUser();
                 });
             } else if(menu === 'View all roles') {
@@ -48,6 +49,16 @@ async function promptUser() {
                     console.log(rows)
                     return promptUser();
                 });
+            } else if(menu === 'View all employees') {
+                const sql = `SELECT * FROM roles`;
+                db.query(sql, (err, rows) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log(rows);
+                    return promptUser();
+                })
             }
         })
         // .then(promptUser());
