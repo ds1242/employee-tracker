@@ -48,7 +48,7 @@ const getRoles = (array) => {
         setToRolesArr(array);
         return;
     })
-}
+};
 
 const questions = [
     {
@@ -160,7 +160,7 @@ async function promptUser() {
          
     return inqurier
         .prompt(questions)
-        .then(({menu, newDepartment, newRoleTitle, newRoleSalary, newRoleDepartment}) => {
+        .then(({menu, newDepartment, newRoleTitle, newRoleSalary, newRoleDepartment, newFirstName, newLastName, newEmployeeRole}) => {
             if(menu ===  'View all departments') {
                 const sql = `SELECT * FROM department`;
 
@@ -218,8 +218,9 @@ async function promptUser() {
                     });
                 })
             } else if(menu === 'Add a role') {
+                // get index from department arr to set the id 
                 let index = departmentArr.indexOf(newRoleDepartment);
-                console.log(index);
+                // insert into role table
                 const sql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`
                 const params = [newRoleTitle, newRoleSalary, index]
                 db.query(sql, params, (err, rows) => {
@@ -238,6 +239,11 @@ async function promptUser() {
                         return promptUser();
                     });                    
                 });
+            } else if(menu === 'Add an employee') {
+                // get index of role for new employee
+                let indexRole = rolesArr.indexOf(newEmployeeRole);
+                const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
+                const params = [newFirstName, newLastName, indexRole, ]
             }
         })
         // .then(promptUser());
