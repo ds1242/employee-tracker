@@ -2,8 +2,14 @@ const express = require('express');
 const inqurier = require('inquirer');
 const cTable = require('console.table');
 
-const departmentArr = [];
-const getDepartments = () => {
+var departmentArr = [];
+
+const setResultsToArray = (array) => {
+    departmentArr = array;
+    return departmentArr;
+}
+
+const getDepartments = (array) => {
     const db = require('./db/connection');
     const sql = `SELECT name FROM department`;
     
@@ -13,17 +19,14 @@ const getDepartments = () => {
                 return;
             }
             for(let i = 0; i < rows.length; i++){
-                departmentArr.push(rows[i].name);
-            }
-            
-            console.log(departmentArr);
-            return;
-            
+                array.push(rows[i].name);
+                // console.log(departmentArr[i]);
+            }    
+            setResultsToArray(array);       
+            return;            
         });
 };
-// var departmentArr = [];
-getDepartments();
-console.log(departmentArr)
+
 
 const questions = [
     {
@@ -78,14 +81,14 @@ const questions = [
     {
         type: 'list',
         name: 'newRoleDepartment',
-        message: 'Please enter a department id this role falls under',
+        message: 'Please enter a department this role falls under',
         choices: departmentArr,
         when: (answers) => answers.menu === 'Add a role',
         validate: newRoleDepartment => {
             if (newRoleDepartment) {
                 return true;
             } else {
-                console.log('Please enter a department id');
+                console.log('Please select a department');
                 return false;
             }
         }
@@ -100,7 +103,7 @@ async function promptUser() {
          
     return inqurier
         .prompt(questions)
-        .then(({menu, newDepartment}) => {
+        .then(({menu, newDepartment, newRoleTitle, newRoleSalary, newRoleDepartment}) => {
             if(menu ===  'View all departments') {
                 const sql = `SELECT * FROM department`;
 
@@ -157,17 +160,35 @@ async function promptUser() {
                         return promptUser();
                     });
                 })
-            } 
-            // else if(menu === 'Add a role') {
-            //     const sql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`
-
-            // }
+            } else if(menu === 'Add a role') {
+                let index = departmentArr.indexOf(newRoleDepartment);
+                console.log(index);
+                const sql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`
+                const params = [newRoleTitle, newRoleSalary, index]
+                db.query(sql, params, (err, rows) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    const sql = `SELECT * FROM roles`;
+                    db.query(sql, (err, rows) => {
+                        if(err) {
+                            console.log(err)
+                            return;
+                        }
+                        const table = cTable.getTable(rows);
+                        console.log(table);
+                        return promptUser();
+                    });                    
+                });
+            }
         })
         // .then(promptUser());
         // .then(db.execute('/api/departments'));
 };
 
 promptUser();
-// main();
+
+getDepartments(departmentArr);
 
 
