@@ -3,9 +3,11 @@ const inqurier = require('inquirer');
 const cTable = require('console.table');
 const db = require('./db/connection');
 
+
 let departmentArr = [];
 let rolesArr = [];
 let managerNameArr = [];
+let employeeNameArr = [];
 
 // functions to set results array from SQL queries to be used in inquirer prompts
 const setResultsToDeptArr = (array) => {
@@ -22,6 +24,11 @@ const setToManagerArr = (array) => {
         managerNameArr[i] = array[i].first_name + ' ' + array[i].last_name ;
     }
     return managerNameArr;
+};
+
+const setToEmployeeArr = (array) => {
+    employeeNameArr = array;
+    return employeeNameArr;
 };
 
 // function to get the department name 
@@ -75,7 +82,23 @@ const getManagerID = (array) => {
         setToManagerArr(array);
         return;
     })
-}
+};
+
+const getEmployee = (array) => {
+    const sql = `SELECT first_name, last_name 
+    FROM employee`;
+    db.query(sql, (err, rows) => {
+        if(err) {
+            console.log(err)
+            return;
+        }
+        for(let i = 0; i < rows.length; i++ ) {
+            array.push(rows[i].first_name + ' ' + rows[i].last_name);
+        }
+        setToEmployeeArr(array);
+        return;
+    })
+};
 
 const questions = [
     {
@@ -196,7 +219,37 @@ const questions = [
                 return true;
             } else {
                 console.log('Please select a manager');
+                return false;
+            }
+        }
+    },
+    {
+        type: 'list',
+        name: 'editEmployee',
+        message: 'Please select an employee to edit their role',
+        choices: employeeNameArr,
+        when: (answers) => answers.menu === 'Update an employee role',
+        validate: editEmployee => {
+            if(editEmployee) {
                 return true;
+            } else {
+                console.log('Please select an employee');
+                return false;
+            }
+        }
+    },
+    {
+        type: 'list',
+        name: 'updateRole',
+        message: 'Please select a new role',
+        choices: rolesArr,
+        when: (answers) => answers.menu === 'Update an employee role',
+        validate: updateRole => {
+            if(updateRole) {
+                return true;
+            } else {
+                console.log('Please select a role');
+                return false;
             }
         }
     }
@@ -210,7 +263,7 @@ async function promptUser() {
          
     return inqurier
         .prompt(questions)
-        .then(({menu, newDepartment, newRoleTitle, newRoleSalary, newRoleDepartment, newFirstName, newLastName, newEmployeeRole, newEmployeeManager}) => {
+        .then(({menu, newDepartment, newRoleTitle, newRoleSalary, newRoleDepartment, newFirstName, newLastName, newEmployeeRole, newEmployeeManager, editEmployee, updateRole}) => {
             if(menu ===  'View all departments') {
                 const sql = `SELECT * FROM department`;
 
@@ -289,8 +342,7 @@ async function promptUser() {
                         return promptUser();
                     });                    
                 });
-            } 
-            else if(menu === 'Add an employee') {
+            } else if(menu === 'Add an employee') {
                 // get index of role for new employee
                 let indexRole = rolesArr.indexOf(newEmployeeRole);
                 let indexManager = managerNameArr.indexOf(newEmployeeManager);
@@ -313,8 +365,34 @@ async function promptUser() {
                         const table = cTable.getTable(rows);
                         console.log(table);
                         return promptUser();
-                    })
-                })
+                    });
+                });
+            } else if(menu === 'Update an employee role') {
+                let indexEmp = 1 + employeeNameArr.indexOf(editEmployee);
+                let indexRole = 1 + rolesArr.indexOf(updateRole);
+                console.log(indexEmp + "emp index" + indexRole + 'indexrole');
+                const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+                const params = [indexRole, indexEmp];
+                db.query(sql, params, (err, rows) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    const sql2 = `SELECT * FROM employee WHERE id = ?`
+                    db.query(sql2, indexEmp, (err, rows) => {
+                        if(err) {
+                            console.log(err);
+                            return;
+                        }
+                        console.log('Employee Updated!')
+                        const table = cTable.getTable(rows);
+                        console.log(table);
+                        return promptUser();
+                    });
+                });
+            } else if(menu === 'Exit') {
+                console.log('Goodbye!');
+                return;
             }
         })
         // .then(promptUser());
@@ -329,4 +407,5 @@ promptUser();
 getDepartments(departmentArr);
 getRoles(rolesArr);
 getManagerID(managerNameArr);
+getEmployee(employeeNameArr);
 
