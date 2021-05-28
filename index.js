@@ -392,7 +392,7 @@ async function promptUser() {
                 });
             } else if(menu === 'Exit') {
                 console.log('Goodbye!');
-                return;
+                return process.exit();
             }
         })
         // .then(promptUser());
