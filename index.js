@@ -1,9 +1,11 @@
 const express = require('express');
 const inqurier = require('inquirer');
 const cTable = require('console.table');
+const db = require('./db/connection');
 
-var departmentArr = [];
+let departmentArr = [];
 let rolesArr = [];
+let managerNameArr = [];
 
 // functions to set results array from SQL queries to be used in inquirer prompts
 const setResultsToDeptArr = (array) => {
@@ -13,6 +15,13 @@ const setResultsToDeptArr = (array) => {
 const setToRolesArr = (array) => {
     rolesArr = array;
     return rolesArr;
+};
+
+const setToManagerArr = (array) => {
+    for(let i = 0; i < array.length; i++) {
+        managerNameArr[i] = array[i].first_name + ' ' + array[i].last_name ;
+    }
+    return managerNameArr;
 };
 
 // function to get the department name 
@@ -49,6 +58,24 @@ const getRoles = (array) => {
         return;
     })
 };
+
+const getManagerID = (array) => {
+    const sql = `SELECT DISTINCT M.first_name, M.last_name
+    FROM employee E
+    JOIN employee M ON E.manager_id = M.id
+    WHERE E.manager_id = M.id`;
+    db.query(sql, (err, rows) => {
+        if(err) {
+            console.log(err)
+            return;
+        }
+        for(let i = 0; i < rows.length; i++) {
+            array.push(rows[i]);
+        }
+        setToManagerArr(array);
+        return;
+    })
+}
 
 const questions = [
     {
@@ -148,7 +175,30 @@ const questions = [
         name: 'newEmployeeRole',
         message: 'Please select their role',
         choices: rolesArr,
-        when: (answers) => answers.menu === 'Add an employee'
+        when: (answers) => answers.menu === 'Add an employee',
+        validate: newEmployeeRole => {
+            if(newEmployeeRole) {
+                return true;
+            } else {
+                console.log('Please select a role');
+                return false;
+            }
+        }
+    },
+    {
+        type: 'list',
+        name: 'newEmployeeManager',
+        message: 'Please select a manager the new employee will report',
+        choices: managerNameArr,
+        when: (answers) => answers.menu === 'Add an employee',
+        validate: newEmployeeManager => {
+            if(newEmployeeManager) {
+                return true;
+            } else {
+                console.log('Please select a manager');
+                return true;
+            }
+        }
     }
 ];
 
@@ -160,7 +210,7 @@ async function promptUser() {
          
     return inqurier
         .prompt(questions)
-        .then(({menu, newDepartment, newRoleTitle, newRoleSalary, newRoleDepartment, newFirstName, newLastName, newEmployeeRole}) => {
+        .then(({menu, newDepartment, newRoleTitle, newRoleSalary, newRoleDepartment, newFirstName, newLastName, newEmployeeRole, newEmployeeManager}) => {
             if(menu ===  'View all departments') {
                 const sql = `SELECT * FROM department`;
 
@@ -239,19 +289,44 @@ async function promptUser() {
                         return promptUser();
                     });                    
                 });
-            } else if(menu === 'Add an employee') {
+            } 
+            else if(menu === 'Add an employee') {
                 // get index of role for new employee
                 let indexRole = rolesArr.indexOf(newEmployeeRole);
+                let indexManager = managerNameArr.indexOf(newEmployeeManager);
+
                 const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
-                const params = [newFirstName, newLastName, indexRole, ]
+                const params = [newFirstName, newLastName, indexRole, indexManager];
+                db.query(sql, params, (err, rows) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    const sql2 = `SELECT E.*, M.first_name AS manager_first_name, M.last_name AS manager_last_name
+                    FROM employee E
+                    JOIN employee M ON E.manager_id = M.id`;
+                    db.query(sql2, (err, rows) => {
+                        if(err) {
+                            console.log(err)
+                            return;
+                        }
+                        const table = cTable.getTable(rows);
+                        console.log(table);
+                        return promptUser();
+                    })
+                })
             }
         })
         // .then(promptUser());
         // .then(db.execute('/api/departments'));
 };
 
+// call prompt user to execute at the command line
 promptUser();
 
+
+// call queries to push values into an array to be used in the promptUser prompts for inqurier
 getDepartments(departmentArr);
 getRoles(rolesArr);
+getManagerID(managerNameArr);
 
