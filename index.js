@@ -3,12 +3,19 @@ const inqurier = require('inquirer');
 const cTable = require('console.table');
 
 var departmentArr = [];
+let rolesArr = [];
 
-const setResultsToArray = (array) => {
+// functions to set results array from SQL queries to be used in inquirer prompts
+const setResultsToDeptArr = (array) => {
     departmentArr = array;
     return departmentArr;
-}
+};
+const setToRolesArr = (array) => {
+    rolesArr = array;
+    return rolesArr;
+};
 
+// function to get the department name 
 const getDepartments = (array) => {
     const db = require('./db/connection');
     const sql = `SELECT name FROM department`;
@@ -22,11 +29,26 @@ const getDepartments = (array) => {
                 array.push(rows[i].name);
                 // console.log(departmentArr[i]);
             }    
-            setResultsToArray(array);       
+            setResultsToDeptArr(array);       
             return;            
         });
 };
-
+// function to query and get the role names
+const getRoles = (array) => {
+    const db = require('./db/connection');
+    const sql = `SELECT title FROM roles`;
+    db.query(sql, (err, rows) => {
+        if(err) {
+            console.log(err)
+            return;
+        }
+        for(let i = 0; i < rows.length; i++ ){
+            array.push(rows[i].title);
+        }
+        setToRolesArr(array);
+        return;
+    })
+}
 
 const questions = [
     {
@@ -92,6 +114,41 @@ const questions = [
                 return false;
             }
         }
+    },
+    {
+        type: 'input',
+        name: 'newFirstName',
+        message: "Please enter the employee's first name?",
+        when: (answers) => answers.menu === 'Add an employee',
+        validate: newFirstName => {
+            if(newFirstName) {
+                return true;
+            } else {
+                console.log('Please enter their first name');
+                return false;
+            }
+        }
+    },
+    {
+        type: 'input',
+        name: 'newLastName',
+        message: "Please enter the employee's last name?",
+        when: (answers) => answers.menu === 'Add an employee',
+        validate: newLastName => {
+            if(newLastName) {
+                return true;
+            } else {
+                console.log('Please enter their first name');
+                return false;
+            }
+        }
+    },
+    {
+        type: 'list',
+        name: 'newEmployeeRole',
+        message: 'Please select their role',
+        choices: rolesArr,
+        when: (answers) => answers.menu === 'Add an employee'
     }
 ];
 
@@ -190,5 +247,5 @@ async function promptUser() {
 promptUser();
 
 getDepartments(departmentArr);
-
+getRoles(rolesArr);
 
