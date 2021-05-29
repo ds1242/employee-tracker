@@ -260,12 +260,8 @@ const questions = [
 async function promptUser() {
     const mysql = require('mysql2/promise');
     const db = require('./db/connection');
-    // call queries to push values into an array to be used later in the promptUser prompts for inqurier
-    // this also ensures that the data is correct each time a function completes
-    getDepartments(departmentArr);
-    getRoles(rolesArr);
-    getManagerID(managerNameArr);
-    getEmployee(employeeNameArr);  
+    
+    
 
     return inqurier
         .prompt(questions)
@@ -379,7 +375,7 @@ async function promptUser() {
                 let indexEmp = 1 + employeeNameArr.indexOf(editEmployee);
                 // get index of role array and add one to match table value
                 let indexRole = 1 + rolesArr.indexOf(updateRole);
-                console.log(indexEmp + "emp index" + indexRole + 'indexrole');
+
                 const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
                 const params = [indexRole, indexEmp];
                 db.query(sql, params, (err, rows) => {
@@ -408,10 +404,16 @@ async function promptUser() {
         // .then(db.execute('/api/departments'));
 };
 
+
+
 // call prompt user to execute at the command line
 promptUser();
 
-
+// call queries to push values into an array to be used later in the promptUser prompts for inqurier
+getDepartments(departmentArr);
+getRoles(rolesArr);
+getManagerID(managerNameArr);
+getEmployee(employeeNameArr);  
 
 
 
