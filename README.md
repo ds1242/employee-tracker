@@ -23,6 +23,47 @@
 
   node index from bash will run the program
 
+  #### Screenshots
+
+  ##### Page Open
+
+  <img src="./assets/img/pageStart.jpg" alt="starting employee tracker on open">
+
+  ##### Query All Departments
+
+  <img src="./assets/img/departmentQuery.jpg" alt="view all departments">
+
+  ##### Query All Employees
+
+  <img src="./assets/img/employeeQuery.jpg" alt="view all employees">
+
+  ##### Query All Roles
+
+  <img src="./assets/img/roleQuery.jpg" alt="view all roles">
+
+  ##### Add A New Department
+
+  <img src="./assets/img/addDepartment.jpg" alt="adding a new department">
+
+  ##### Add A New Role
+
+  <img src="./assets/img/addRole.jpg" alt="adding a new role">
+
+  ##### Add A New Employee
+
+  <img src="./assets/img/addEmployee.jpg" alt="adding a new employee">
+
+  ##### Update An Employee Role
+
+  ###### Old Role
+
+  <img src="./assets/img/oldRole.jpg" alt="viewing old employee role">
+
+  ###### New Role
+
+  <img src="./assets/img/newRole.jpg" alt="new role added">
+
+
   ## Languages
 
   JavaScript<br>ES6<br>jQuery<br>MySQL<br>Node.js<br>
