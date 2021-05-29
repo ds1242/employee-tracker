@@ -260,7 +260,13 @@ const questions = [
 async function promptUser() {
     const mysql = require('mysql2/promise');
     const db = require('./db/connection');
-         
+    // call queries to push values into an array to be used later in the promptUser prompts for inqurier
+    // this also ensures that the data is correct each time a function completes
+    getDepartments(departmentArr);
+    getRoles(rolesArr);
+    getManagerID(managerNameArr);
+    getEmployee(employeeNameArr);  
+
     return inqurier
         .prompt(questions)
         .then(({menu, newDepartment, newRoleTitle, newRoleSalary, newRoleDepartment, newFirstName, newLastName, newEmployeeRole, newEmployeeManager, editEmployee, updateRole}) => {
@@ -343,9 +349,10 @@ async function promptUser() {
                     });                    
                 });
             } else if(menu === 'Add an employee') {
-                // get index of role for new employee
-                let indexRole = rolesArr.indexOf(newEmployeeRole);
-                let indexManager = managerNameArr.indexOf(newEmployeeManager);
+                // get index of role for new employee from array and add one to match row from sql table
+                let indexRole = 1 + rolesArr.indexOf(newEmployeeRole);
+                // get index of manager array and add one to match table value
+                let indexManager = 1 + managerNameArr.indexOf(newEmployeeManager);
 
                 const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
                 const params = [newFirstName, newLastName, indexRole, indexManager];
@@ -368,7 +375,9 @@ async function promptUser() {
                     });
                 });
             } else if(menu === 'Update an employee role') {
+                // get index of employee array and one to match table value
                 let indexEmp = 1 + employeeNameArr.indexOf(editEmployee);
+                // get index of role array and add one to match table value
                 let indexRole = 1 + rolesArr.indexOf(updateRole);
                 console.log(indexEmp + "emp index" + indexRole + 'indexrole');
                 const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
@@ -403,9 +412,6 @@ async function promptUser() {
 promptUser();
 
 
-// call queries to push values into an array to be used in the promptUser prompts for inqurier
-getDepartments(departmentArr);
-getRoles(rolesArr);
-getManagerID(managerNameArr);
-getEmployee(employeeNameArr);
+
+
 
