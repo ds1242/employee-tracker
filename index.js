@@ -286,7 +286,7 @@ async function promptUser() {
                     return promptUser();
                 });
             } else if(menu === 'View all roles') {
-                const sql = `SELECT * FROM roles`;
+                const sql = `SELECT A.id, A.title, A.salary, B.name AS department_name FROM roles A JOIN department B ON A.department_id = B.id`;
 
                 db.query(sql, (err, rows) => {
                     if(err) {

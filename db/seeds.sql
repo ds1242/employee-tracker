@@ -29,23 +29,23 @@ VALUES
 -- insert employees
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES
-    ('CEO', 'Of All', 15, NULL),
-    ('Manager', 'HR', 3, 1),
-    ('Manager', 'IT', 14, 1),
-    ('Manager', 'Marketing', 11, 1),
-    ('Manager', 'Accounting', 8, 1),  
+    ('Dan', 'CEO', 15, NULL),
+    ('Thomas', 'Anderson', 3, 1),
+    ('Sterling', 'Archer', 14, 1),
+    ('Cheryl', 'Tunt', 11, 1),
+    ('Pam', 'Poovey', 8, 1),  
     ('Jane', 'Doe', 1, 2),
     ('Mary', 'Jane', 1, 2),
-    ('Trainer', 'One', 2, 2),
-    ('Trainer', 'Two', 2, 2), 
-    ('Accountant', 'One', 4, 5),
-    ('Accountant', 'Two', 5, 5),
-    ('AP Specialist', 'One', 6, 5),
-    ('AP Specialist', 'Two', 7, 5),    
-    ('Marketer', 'One', 9, 4),
-    ('Marketer', 'Two', 10, 4),    
-    ('Developer', 'One', 12, 3),
-    ('Developer', 'Two', 13, 3);
+    ('Lana', 'Kane', 2, 2),
+    ('Cryil', 'Figgis', 2, 2), 
+    ('Malory', 'Archer', 4, 5),
+    ('Ray', 'Gillette', 5, 5),
+    ('Dr.', 'Krieger', 6, 5),
+    ('Woodhouse', 'Housecleaner', 7, 5),    
+    ('Rip', 'Ripley', 9, 4),
+    ('Barry', 'Dillon', 10, 4),    
+    ('Kenny', 'Loggins', 12, 3),
+    ('Ron', 'Cadillace', 13, 3);
     
 
 
